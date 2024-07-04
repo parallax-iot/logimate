@@ -29,6 +29,7 @@ import { DeviceUpdateInput } from "./DeviceUpdateInput";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
+import { CreateDeviceDto } from "../CreateDeviceDto";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -298,5 +299,22 @@ export class DeviceControllerBase {
       data,
       select: { id: true },
     });
+  }
+
+  @common.Post("")
+  @swagger.ApiOkResponse({
+    type: CreateDeviceDto,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async CreateDeviceWithAuthUserId(
+    @common.Body()
+    body: CreateDeviceDto
+  ): Promise<CreateDeviceDto> {
+    return this.service.CreateDeviceWithAuthUserId(body);
   }
 }

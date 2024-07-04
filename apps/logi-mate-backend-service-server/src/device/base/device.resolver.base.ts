@@ -28,6 +28,7 @@ import { UpdateDeviceArgs } from "./UpdateDeviceArgs";
 import { DeleteDeviceArgs } from "./DeleteDeviceArgs";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
+import { CreateDeviceDto } from "../CreateDeviceDto";
 import { DeviceService } from "../device.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Device)
@@ -158,5 +159,13 @@ export class DeviceResolverBase {
     }
 
     return results;
+  }
+
+  @graphql.Mutation(() => CreateDeviceDto)
+  async CreateDeviceWithAuthUserId(
+    @graphql.Args()
+    args: CreateDeviceDto
+  ): Promise<CreateDeviceDto> {
+    return this.service.CreateDeviceWithAuthUserId(args);
   }
 }

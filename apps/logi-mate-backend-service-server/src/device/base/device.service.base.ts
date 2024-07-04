@@ -15,6 +15,7 @@ import {
   Device as PrismaDevice,
   User as PrismaUser,
 } from "@prisma/client";
+import { CreateDeviceDto } from "../CreateDeviceDto";
 
 export class DeviceServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -50,5 +51,10 @@ export class DeviceServiceBase {
         where: { id: parentId },
       })
       .users(args);
+  }
+  async CreateDeviceWithAuthUserId(
+    args: CreateDeviceDto
+  ): Promise<CreateDeviceDto> {
+    throw new Error("Not implemented");
   }
 }

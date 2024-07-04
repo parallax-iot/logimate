@@ -8,11 +8,14 @@ import { UnlockAttemptModule } from "./unlockAttempt/unlockAttempt.module";
 import { LocationHistoryModule } from "./locationHistory/locationHistory.module";
 import { OrderModule } from "./order/order.module";
 import { UserModule } from "./user/user.module";
+import { RoleModule } from "./role/role.module";
+import { PermissionModule } from "./permission/permission.module";
+import { DeviceModule } from "./device/device.module";
+import { UserManagementModule } from "./UserManagement/usermanagement.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
-import { KafkaModule } from "./mqtt/kafka.module";
-import { MqttModule } from "./mqtt/mqtt.module";
+import { KafkaModule } from "./kafka/kafka.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -27,7 +30,6 @@ import { AuthModule } from "./auth/auth.module";
   imports: [
     ACLModule,
     AuthModule,
-    MqttModule,
     KafkaModule,
     TamperedStatusModule,
     SmartBoxDeviceModule,
@@ -36,6 +38,10 @@ import { AuthModule } from "./auth/auth.module";
     LocationHistoryModule,
     OrderModule,
     UserModule,
+    RoleModule,
+    PermissionModule,
+    DeviceModule,
+    UserManagementModule,
     HealthModule,
     PrismaModule,
     SecretsManagerModule,

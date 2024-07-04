@@ -11,13 +11,32 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, MaxLength } from "class-validator";
+import { DeviceWhereUniqueInput } from "../../device/base/DeviceWhereUniqueInput";
+import {
+  ValidateNested,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from "class-validator";
+import { Type } from "class-transformer";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => DeviceWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => DeviceWhereUniqueInput)
+  @IsOptional()
+  @Field(() => DeviceWhereUniqueInput, {
+    nullable: true,
+  })
+  device?: DeviceWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: String,

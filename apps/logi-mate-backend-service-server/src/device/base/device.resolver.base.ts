@@ -19,31 +19,32 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { User } from "./User";
-import { UserCountArgs } from "./UserCountArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
-import { Device } from "../../device/base/Device";
-import { UserService } from "../user.service";
+import { Device } from "./Device";
+import { DeviceCountArgs } from "./DeviceCountArgs";
+import { DeviceFindManyArgs } from "./DeviceFindManyArgs";
+import { DeviceFindUniqueArgs } from "./DeviceFindUniqueArgs";
+import { CreateDeviceArgs } from "./CreateDeviceArgs";
+import { UpdateDeviceArgs } from "./UpdateDeviceArgs";
+import { DeleteDeviceArgs } from "./DeleteDeviceArgs";
+import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
+import { User } from "../../user/base/User";
+import { DeviceService } from "../device.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-@graphql.Resolver(() => User)
-export class UserResolverBase {
+@graphql.Resolver(() => Device)
+export class DeviceResolverBase {
   constructor(
-    protected readonly service: UserService,
+    protected readonly service: DeviceService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => MetaQueryPayload)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Device",
     action: "read",
     possession: "any",
   })
-  async _usersMeta(
-    @graphql.Args() args: UserCountArgs
+  async _devicesMeta(
+    @graphql.Args() args: DeviceCountArgs
   ): Promise<MetaQueryPayload> {
     const result = await this.service.count(args);
     return {
@@ -52,25 +53,27 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => [User])
+  @graphql.Query(() => [Device])
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Device",
     action: "read",
     possession: "any",
   })
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.users(args);
+  async devices(@graphql.Args() args: DeviceFindManyArgs): Promise<Device[]> {
+    return this.service.devices(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => User, { nullable: true })
+  @graphql.Query(() => Device, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Device",
     action: "read",
     possession: "own",
   })
-  async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.user(args);
+  async device(
+    @graphql.Args() args: DeviceFindUniqueArgs
+  ): Promise<Device | null> {
+    const result = await this.service.device(args);
     if (result === null) {
       return null;
     }
@@ -78,47 +81,33 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Device)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Device",
     action: "create",
     possession: "any",
   })
-  async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.createUser({
+  async createDevice(@graphql.Args() args: CreateDeviceArgs): Promise<Device> {
+    return await this.service.createDevice({
       ...args,
-      data: {
-        ...args.data,
-
-        device: args.data.device
-          ? {
-              connect: args.data.device,
-            }
-          : undefined,
-      },
+      data: args.data,
     });
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Device)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Device",
     action: "update",
     possession: "any",
   })
-  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
+  async updateDevice(
+    @graphql.Args() args: UpdateDeviceArgs
+  ): Promise<Device | null> {
     try {
-      return await this.service.updateUser({
+      return await this.service.updateDevice({
         ...args,
-        data: {
-          ...args.data,
-
-          device: args.data.device
-            ? {
-                connect: args.data.device,
-              }
-            : undefined,
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -130,15 +119,17 @@ export class UserResolverBase {
     }
   }
 
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Device)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Device",
     action: "delete",
     possession: "any",
   })
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+  async deleteDevice(
+    @graphql.Args() args: DeleteDeviceArgs
+  ): Promise<Device | null> {
     try {
-      return await this.service.deleteUser(args);
+      return await this.service.deleteDevice(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -150,21 +141,22 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Device, {
-    nullable: true,
-    name: "device",
-  })
+  @graphql.ResolveField(() => [User], { name: "users" })
   @nestAccessControl.UseRoles({
-    resource: "Device",
+    resource: "User",
     action: "read",
     possession: "any",
   })
-  async getDevice(@graphql.Parent() parent: User): Promise<Device | null> {
-    const result = await this.service.getDevice(parent.id);
+  async findUsers(
+    @graphql.Parent() parent: Device,
+    @graphql.Args() args: UserFindManyArgs
+  ): Promise<User[]> {
+    const results = await this.service.findUsers(parent.id, args);
 
-    if (!result) {
-      return null;
+    if (!results) {
+      return [];
     }
-    return result;
+
+    return results;
   }
 }

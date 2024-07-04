@@ -19,31 +19,30 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { User } from "./User";
-import { UserCountArgs } from "./UserCountArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
-import { Device } from "../../device/base/Device";
-import { UserService } from "../user.service";
+import { Role } from "./Role";
+import { RoleCountArgs } from "./RoleCountArgs";
+import { RoleFindManyArgs } from "./RoleFindManyArgs";
+import { RoleFindUniqueArgs } from "./RoleFindUniqueArgs";
+import { CreateRoleArgs } from "./CreateRoleArgs";
+import { UpdateRoleArgs } from "./UpdateRoleArgs";
+import { DeleteRoleArgs } from "./DeleteRoleArgs";
+import { RoleService } from "../role.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-@graphql.Resolver(() => User)
-export class UserResolverBase {
+@graphql.Resolver(() => Role)
+export class RoleResolverBase {
   constructor(
-    protected readonly service: UserService,
+    protected readonly service: RoleService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => MetaQueryPayload)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Role",
     action: "read",
     possession: "any",
   })
-  async _usersMeta(
-    @graphql.Args() args: UserCountArgs
+  async _rolesMeta(
+    @graphql.Args() args: RoleCountArgs
   ): Promise<MetaQueryPayload> {
     const result = await this.service.count(args);
     return {
@@ -52,25 +51,25 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => [User])
+  @graphql.Query(() => [Role])
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Role",
     action: "read",
     possession: "any",
   })
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.users(args);
+  async roles(@graphql.Args() args: RoleFindManyArgs): Promise<Role[]> {
+    return this.service.roles(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => User, { nullable: true })
+  @graphql.Query(() => Role, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Role",
     action: "read",
     possession: "own",
   })
-  async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.user(args);
+  async role(@graphql.Args() args: RoleFindUniqueArgs): Promise<Role | null> {
+    const result = await this.service.role(args);
     if (result === null) {
       return null;
     }
@@ -78,47 +77,31 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Role)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Role",
     action: "create",
     possession: "any",
   })
-  async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.createUser({
+  async createRole(@graphql.Args() args: CreateRoleArgs): Promise<Role> {
+    return await this.service.createRole({
       ...args,
-      data: {
-        ...args.data,
-
-        device: args.data.device
-          ? {
-              connect: args.data.device,
-            }
-          : undefined,
-      },
+      data: args.data,
     });
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Role)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Role",
     action: "update",
     possession: "any",
   })
-  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
+  async updateRole(@graphql.Args() args: UpdateRoleArgs): Promise<Role | null> {
     try {
-      return await this.service.updateUser({
+      return await this.service.updateRole({
         ...args,
-        data: {
-          ...args.data,
-
-          device: args.data.device
-            ? {
-                connect: args.data.device,
-              }
-            : undefined,
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -130,15 +113,15 @@ export class UserResolverBase {
     }
   }
 
-  @graphql.Mutation(() => User)
+  @graphql.Mutation(() => Role)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Role",
     action: "delete",
     possession: "any",
   })
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+  async deleteRole(@graphql.Args() args: DeleteRoleArgs): Promise<Role | null> {
     try {
-      return await this.service.deleteUser(args);
+      return await this.service.deleteRole(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -147,24 +130,5 @@ export class UserResolverBase {
       }
       throw error;
     }
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Device, {
-    nullable: true,
-    name: "device",
-  })
-  @nestAccessControl.UseRoles({
-    resource: "Device",
-    action: "read",
-    possession: "any",
-  })
-  async getDevice(@graphql.Parent() parent: User): Promise<Device | null> {
-    const result = await this.service.getDevice(parent.id);
-
-    if (!result) {
-      return null;
-    }
-    return result;
   }
 }

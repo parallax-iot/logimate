@@ -45,6 +45,8 @@ model Order {
 
 model User {
   createdAt DateTime @default(now())
+  device    Device?  @relation(fields: [deviceId], references: [id])
+  deviceId  String?
   email     String?  @unique
   firstName String?
   id        String   @id @default(cuid())
@@ -53,4 +55,27 @@ model User {
   roles     Json
   updatedAt DateTime @updatedAt
   username  String   @unique
+}
+
+model Role {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  action    String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Device {
+  createdAt  DateTime @default(now())
+  deviceId   String?
+  deviceName String?
+  id         String   @id @default(cuid())
+  updatedAt  DateTime @updatedAt
+  users      User[]
 }

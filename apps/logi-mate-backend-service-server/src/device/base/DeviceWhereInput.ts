@@ -11,25 +11,24 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { DeviceWhereUniqueInput } from "../../device/base/DeviceWhereUniqueInput";
-import { ValidateNested, IsOptional } from "class-validator";
-import { Type } from "class-transformer";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { Type } from "class-transformer";
+import { IsOptional, ValidateNested } from "class-validator";
 import { StringFilter } from "../../util/StringFilter";
+import { UserListRelationFilter } from "../../user/base/UserListRelationFilter";
 
 @InputType()
-class UserWhereInput {
+class DeviceWhereInput {
   @ApiProperty({
     required: false,
-    type: () => DeviceWhereUniqueInput,
+    type: StringNullableFilter,
   })
-  @ValidateNested()
-  @Type(() => DeviceWhereUniqueInput)
+  @Type(() => StringNullableFilter)
   @IsOptional()
-  @Field(() => DeviceWhereUniqueInput, {
+  @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  device?: DeviceWhereUniqueInput;
+  deviceId?: StringNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -40,18 +39,7 @@ class UserWhereInput {
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  email?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  firstName?: StringNullableFilter;
+  deviceName?: StringNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -66,25 +54,15 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: StringNullableFilter,
+    type: () => UserListRelationFilter,
   })
-  @Type(() => StringNullableFilter)
+  @ValidateNested()
+  @Type(() => UserListRelationFilter)
   @IsOptional()
-  @Field(() => StringNullableFilter, {
+  @Field(() => UserListRelationFilter, {
     nullable: true,
   })
-  lastName?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  username?: StringFilter;
+  users?: UserListRelationFilter;
 }
 
-export { UserWhereInput as UserWhereInput };
+export { DeviceWhereInput as DeviceWhereInput };

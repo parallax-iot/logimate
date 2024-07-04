@@ -8,6 +8,10 @@ import { UnlockAttemptModule } from "./unlockAttempt/unlockAttempt.module";
 import { LocationHistoryModule } from "./locationHistory/locationHistory.module";
 import { OrderModule } from "./order/order.module";
 import { UserModule } from "./user/user.module";
+import { RoleModule } from "./role/role.module";
+import { PermissionModule } from "./permission/permission.module";
+import { DeviceModule } from "./device/device.module";
+import { UserManagementModule } from "./UserManagement/usermanagement.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
@@ -34,6 +38,10 @@ import { AuthModule } from "./auth/auth.module";
     LocationHistoryModule,
     OrderModule,
     UserModule,
+    RoleModule,
+    PermissionModule,
+    DeviceModule,
+    UserManagementModule,
     HealthModule,
     PrismaModule,
     SecretsManagerModule,

@@ -13,19 +13,16 @@ import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsDate,
-  ValidateNested,
-  IsOptional,
   IsString,
   MaxLength,
+  IsOptional,
+  ValidateNested,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { Device } from "../../device/base/Device";
-import { IsJSONValue } from "../../validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
+import { User } from "../../user/base/User";
 
 @ObjectType()
-class User {
+class Device {
   @ApiProperty({
     required: true,
   })
@@ -36,35 +33,27 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: () => Device,
+    type: String,
   })
-  @ValidateNested()
-  @Type(() => Device)
+  @IsString()
+  @MaxLength(1000)
   @IsOptional()
-  device?: Device | null;
+  @Field(() => String, {
+    nullable: true,
+  })
+  deviceId!: string | null;
 
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  email!: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(256)
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  firstName!: string | null;
+  deviceName!: string | null;
 
   @ApiProperty({
     required: true,
@@ -75,25 +64,6 @@ class User {
   id!: string;
 
   @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(256)
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName!: string | null;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  roles!: JsonValue;
-
-  @ApiProperty({
     required: true,
   })
   @IsDate()
@@ -102,12 +72,13 @@ class User {
   updatedAt!: Date;
 
   @ApiProperty({
-    required: true,
-    type: String,
+    required: false,
+    type: () => [User],
   })
-  @IsString()
-  @Field(() => String)
-  username!: string;
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
+  users?: Array<User>;
 }
 
-export { User as User };
+export { Device as Device };
